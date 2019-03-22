@@ -1,7 +1,7 @@
-#Live Chat
+## Live Chat
 Live chat application running on port 5050 on your local machine. You're more than welcome to host a server and point the socket in index.html to a specific device on the network, and then be able to chat across devices within your network.
 
-#Installation
+## Installation
   1. Clone the repo
   2. Install the node module
     ```
