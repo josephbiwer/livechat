@@ -4,7 +4,7 @@ Live chat application running on port 5050 on your local machine. You're more th
 #Installation
   1. Clone the repo
   2. Install the node module
-    ```js
+    ```
       npm install
     ```
   3. Run the server
