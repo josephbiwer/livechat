@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Joe's Test Socket</title>
+
+        <!-- Google Fonts Include -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+            * {
+                font-family: 'Montserrat', sans-serif;
+            }
+
+            input:focus,
+            textarea:focus,
+            button:focus {
+                outline: none;
+            }
+
+            /** Message Styling -- Dynamically added **/
+            .msg-container {
+                width: 90%;
+                margin: 10px auto;
+                padding: 10px;
+                display: grid;
+                grid-template-columns: 30px auto;
+                grid-column-gap: 15px;
+                grid-template-areas: 'name msg';
+                align-self: end;
+            }
+
+            .msg-container.self {
+                grid-template-columns: auto 30px;
+                grid-template-areas: 'msg name';
+            }
+
+            .msg-container .name {
+                grid-area: name;
+                height: 30px;
+                border-radius: 50%;
+                background: #4286f4;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+            }
+
+            .msg-container.self .name {
+                background: #eee;
+            }
+
+            .msg-container .name p {
+                color: #333;
+                margin: 0;
+            }
+
+            .msg-container .msg {
+                grid-area: msg;
+                margin: 0;
+                font-size: 12px;
+                text-align: left;
+            }
+
+            .msg-container.self .msg {
+                text-align: right;
+            }
+
+            @media (hover) {
+                button:hover {
+                    color: #4286f4 !important;
+                    background: white !important;
+                }
+            }
+        </style>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let sock = io.connect('http://192.168.1.9:5050');
+            
+            submitForm = () => {
+                let msg = {
+                    name: document.getElementById('name').value,
+                    message: document.getElementById('msg').value
+                }
+
+                if(msg.message !== '') {
+                    sock.emit('send message', msg);                
+                    addMessage(msg, true);
+
+                    // Cleargin message field
+                    document.getElementById('msg').value = '';            // message field
+                }
+
+                return false;
+            }
+
+        </script>
+    </head>
+    <body>
+        <input name="name" id="name" placeholder="Name" style="
+            border: solid #ccc;
+            border-width: 0 0 1px 0;
+            background: transparent;
+            padding: 5px;
+            display: block;
+            margin: 5px auto;
+            text-align: center;
+        ">
+        <div id="messages"
+            style="
+                text-align: center;
+                display: block;
+                height: 60vh;
+                width: 75vw;
+                margin: 10px auto;
+                background: #fefefe;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                overflow: scroll;
+            ">
+
+        </div>
+        <form class="message" onsubmit="return submitForm()" style="
+            display: grid;
+            grid-template-columns: 100px auto;
+            grid-column-gap: 10px;
+            width: 75vw;
+            margin: 5px auto;
+        ">
+            <button type="submit" style="
+                color: white;
+                background: #4286f4;
+                border: 1px solid #4286f4;
+                border-radius: 5px;
+                font-weight: bold;
+                letter-spacing: 2px;
+                padding: 10px 0;
+                cursor: pointer;
+                transition: 125ms;
+            ">Send</button>
+            <textarea name="msg" id="msg" placeholder="Message" style="
+                background: white;
+                border-radius: 5px;
+                border: 1px solid #4286f4;
+                text-align: center;
+                padding: 5px;
+                resize: none;
+                box-sizing: border-box;
+            "></textarea>
+        </form>
+
+        <script>
+
+            addMessage = (msg, self = false) => {
+                const { name, message } = msg;
+
+                let msgContainer = document.createElement('div');
+                msgContainer.classList.add('msg-container');
+                // If user's own message
+                self === true
+                    ? msgContainer.classList.add('self')
+                    : '';
+
+                let msgName = document.createElement('div');
+                
+                let msgNameP = document.createElement('p');
+                msgNameP.innerHTML = name[0].toUpperCase();
+                msgName.appendChild(msgNameP);
+                
+                msgName.classList.add('name');
+
+                let msgMessage = document.createElement('p');
+                msgMessage.innerHTML = message;
+                msgMessage.classList.add('msg');
+
+                msgContainer.appendChild(msgName);
+                msgContainer.appendChild(msgMessage);
+
+                document.getElementById("messages").appendChild(msgContainer);
+            }
+
+            sock.on('add message', msg => {
+                addMessage(msg);
+            })
+        </script>
+    </body>
+</html>
