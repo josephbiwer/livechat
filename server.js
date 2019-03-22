@@ -17,7 +17,6 @@ io.on('connection', function (socket) {
 
   // Message received on server side
   socket.on('send message', msg => {
-    console.log(`msg: ${msg}`)
     socket.broadcast.emit('add message', msg);
   })
 
